@@ -94,6 +94,10 @@ END $$;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.crawl_jobs;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.videos;
 
+-- Enable full replica identity to ensure all fields are sent in UPDATE events
+ALTER TABLE public.crawl_jobs REPLICA IDENTITY FULL;
+ALTER TABLE public.videos REPLICA IDENTITY FULL;
+
 -- ==========================================
 -- 6. ROW LEVEL SECURITY (RLS) POLICIES
 -- ==========================================
