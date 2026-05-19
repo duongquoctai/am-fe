@@ -90,16 +90,18 @@ export function ControlPanel({ onStartCrawl, isLoading }: ControlPanelProps) {
                 className="flex-1 h-8 rounded"
                 onClick={() => setCrawlType("hashtag")}
               >
-                Hashtag
+                {platform === "instagram" ? "Hashtag" : "Keyword"}
               </Button>
-              <Button
-                variant={crawlType === "profile" ? "secondary" : "ghost"}
-                size="sm"
-                className="flex-1 h-8 rounded"
-                onClick={() => setCrawlType("profile")}
-              >
-                Profile
-              </Button>
+              {(platform === "instagram" || platform === "tiktok") && (
+                <Button
+                  variant={crawlType === "profile" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="flex-1 h-8 rounded"
+                  onClick={() => setCrawlType("profile")}
+                >
+                  Profile
+                </Button>
+              )}
             </div>
           </div>
 

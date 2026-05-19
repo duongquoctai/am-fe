@@ -42,14 +42,14 @@ export function useJobProgress(jobId: string | null) {
           table: "crawl_jobs",
           filter: `id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           console.log("[useJobProgress] Realtime update received:", payload);
           if (payload.new && Object.keys(payload.new).length > 0) {
             setJob(payload.new as Job);
           }
         },
       )
-      .subscribe((status, err) => {
+      .subscribe((status: string, err: Error | null) => {
         console.log(
           `[useJobProgress] Subscription status for job ${jobId}:`,
           status,

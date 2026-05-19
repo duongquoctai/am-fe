@@ -46,7 +46,7 @@ export function useVideos(jobId: string | null) {
           schema: "public",
           table: "videos",
         },
-        (payload) => {
+        (payload: any) => {
           console.log("[useVideos] New video received via realtime:", payload);
           const newVideo = payload.new as Video;
           if (!jobId || newVideo.job_id === jobId) {
@@ -61,13 +61,13 @@ export function useVideos(jobId: string | null) {
           schema: "public",
           table: "videos",
         },
-        (payload) => {
+        (payload: any) => {
           console.log("[useVideos] Video deleted via realtime:", payload);
           const deletedId = payload.old.id;
           setVideos((prev) => prev.filter((v) => v.id !== deletedId));
         },
       )
-      .subscribe((status, err) => {
+      .subscribe((status: string, err: Error | null) => {
         console.log(`[useVideos] Subscription status:`, status);
         if (err) {
           console.error(`[useVideos] Subscription error:`, err);

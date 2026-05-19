@@ -1,9 +1,9 @@
 "use client";
 
+import { deleteVideo } from "@/app/actions/delete-video";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteVideo } from "@/app/actions/delete-video";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Play, Trash2, User } from "lucide-react";
 import * as React from "react";
@@ -30,21 +30,23 @@ interface VideoCardProps {
     affiliate_link?: string | null;
   };
   onDelete: (id: string) => void;
+  onClick?: (video: any) => void;
 }
 
-export function VideoCard({ video, onDelete }: VideoCardProps) {
+export function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
   const [affiliateLink, setAffiliateLink] = React.useState(
     video.affiliate_link || "",
   );
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
     const result = await deleteVideo(
       video.id,
       video.storage_url,
-      video.thumbnail_url || null
+      video.thumbnail_url || null,
     );
     if (result.success) {
       toast.success("Video deleted successfully");
@@ -62,9 +64,23 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="bg-[#121212] border-[#2a2a2a] overflow-hidden group">
+      <Card 
+        className="bg-[#121212] border-[#2a2a2a] overflow-hidden group cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => onClick && onClick(video)}
+      >
         <div className="relative aspect-[9/16] bg-[#0a0a0a]">
-          {video.thumbnail_url ? (
+          {isHovered && video.storage_url ? (
+            <video
+              src={video.storage_url}
+              className="w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : video.thumbnail_url ? (
             <img
               src={video.thumbnail_url}
               alt={video.original_caption || "Video"}
@@ -76,7 +92,7 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
             </div>
           )}
 
-          <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border-[#2a2a2a] uppercase font-bold text-[10px]">
+          <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border-[#2a2a2a] uppercase font-bold text-[10px] text-gray-400 z-10">
             {video.platform === "instagram" ? "IG" : video.platform}
           </Badge>
 
@@ -101,15 +117,19 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
           {/* Delete Button */}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <button className="absolute top-3 right-3 p-2 rounded-md bg-black/60 backdrop-blur-md border border-[#2a2a2a] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20 hover:border-red-500/30">
+              <button 
+                onClick={(e) => e.stopPropagation()} 
+                className="absolute top-3 right-3 p-2 rounded-md bg-black/60 backdrop-blur-md border border-[#2a2a2a] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20 hover:border-red-500/30 z-10"
+              >
                 <Trash2 className="w-3.5 h-3.5 text-[#a1a1a1] hover:text-red-500 transition-colors" />
               </button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
               <DialogHeader>
                 <DialogTitle>Delete Video</DialogTitle>
                 <DialogDescription>
-                  This will permanently delete this video and its thumbnail. This action cannot be undone.
+                  This will permanently delete this video and its thumbnail.
+                  This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -136,7 +156,10 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
           </Dialog>
         </div>
 
-        <CardContent className="p-4 space-y-4">
+        <CardContent 
+          className="p-4 space-y-4 relative z-10 bg-[#121212]"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="space-y-2">
             <label className="text-[10px] uppercase font-bold text-[#a1a1a1] tracking-wider">
               Shopee Affiliate Link

@@ -4,6 +4,7 @@ import * as React from "react"
 import { VideoCard } from "./video-card"
 import { Button } from "@/components/ui/button"
 import { Filter, Layers } from "lucide-react"
+import { VideoPlayerModal } from "../shared/video-player-modal"
 
 interface VideoGalleryProps {
   videos: any[]
@@ -12,6 +13,8 @@ interface VideoGalleryProps {
 }
 
 export function VideoGallery({ videos, isLoading, onDelete }: VideoGalleryProps) {
+  const [selectedVideo, setSelectedVideo] = React.useState<any>(null);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-[#2a2a2a] pb-4">
@@ -38,13 +41,24 @@ export function VideoGallery({ videos, isLoading, onDelete }: VideoGalleryProps)
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {videos.map((video) => (
-            <VideoCard key={video.id} video={video} onDelete={onDelete || (() => {})} />
+            <VideoCard 
+              key={video.id} 
+              video={video} 
+              onDelete={onDelete || (() => {})} 
+              onClick={setSelectedVideo}
+            />
           ))}
           {isLoading && Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="aspect-[9/16] bg-[#1c1c1c] animate-pulse rounded-xl" />
           ))}
         </div>
       )}
+
+      <VideoPlayerModal
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        videoUrl={selectedVideo?.storage_url || null}
+      />
     </div>
   )
 }
