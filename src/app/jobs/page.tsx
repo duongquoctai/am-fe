@@ -1,19 +1,14 @@
+import { Sidebar } from "@/components/shared/sidebar";
 import { createClient } from "@/lib/supabase/server";
 import {
   Bell,
-  Database,
-  LayoutDashboard,
-  Moon,
-  Search,
-  Settings,
-  User,
-  ExternalLink,
-  RefreshCw,
   Compass,
-  Film,
+  ExternalLink,
+  Moon,
+  RefreshCw,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
-import * as React from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -27,48 +22,8 @@ export default async function JobsHistoryPage() {
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-[#f2f2f2] overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-[#1c1c1c] bg-[#0a0a0a] hidden md:flex flex-col">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="font-bold text-white">AM</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight">AM Engine</span>
-          </div>
-
-          <nav className="space-y-1">
-            <Link
-              href="/"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <LayoutDashboard size={18} />
-              Dashboard
-            </Link>
-            <Link
-              href="/jobs"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm bg-[#121212] text-white font-medium transition-all"
-            >
-              <Database size={18} />
-              Crawl Jobs
-            </Link>
-            <Link
-              href="#"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <Settings size={18} />
-              Settings
-            </Link>
-          </nav>
-        </div>
-
-        <div className="mt-auto p-6 border-t border-[#1c1c1c]">
-          <div className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1]">
-            <User size={18} />
-            Profile
-          </div>
-        </div>
-      </aside>
+      {/* Sidebar Component */}
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -110,7 +65,9 @@ export default async function JobsHistoryPage() {
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold tracking-tight">Crawl Jobs History</h1>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Crawl Jobs History
+              </h1>
               <p className="text-[#a1a1a1]">
                 Review all past and active social media ingestion streams.
               </p>
@@ -134,9 +91,12 @@ export default async function JobsHistoryPage() {
                 <div className="w-12 h-12 rounded-full bg-[#1c1c1c] flex items-center justify-center mb-4 border border-[#2a2a2a]">
                   <Compass className="w-6 h-6 text-[#a1a1a1]" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#f2f2f2] mb-1">No Jobs Found</h3>
+                <h3 className="text-lg font-semibold text-[#f2f2f2] mb-1">
+                  No Jobs Found
+                </h3>
                 <p className="text-sm text-[#a1a1a1] text-center max-w-sm mb-6">
-                  You haven't initiated any crawling tasks yet. Create your first job to start.
+                  You haven't initiated any crawling tasks yet. Create your
+                  first job to start.
                 </p>
                 <Link
                   href="/"
@@ -183,7 +143,9 @@ export default async function JobsHistoryPage() {
 
                       const percentage =
                         job.target_count > 0
-                          ? Math.round((job.saved_count / job.target_count) * 100)
+                          ? Math.round(
+                              (job.saved_count / job.target_count) * 100,
+                            )
                           : 0;
 
                       return (
@@ -211,7 +173,9 @@ export default async function JobsHistoryPage() {
                               <div className="w-16 bg-[#1c1c1c] rounded-full h-1.5 overflow-hidden">
                                 <div
                                   className="bg-blue-600 h-full rounded-full"
-                                  style={{ width: `${Math.min(100, percentage)}%` }}
+                                  style={{
+                                    width: `${Math.min(100, percentage)}%`,
+                                  }}
                                 />
                               </div>
                               <span className="font-semibold text-xs text-[#a1a1a1]">
@@ -242,7 +206,7 @@ export default async function JobsHistoryPage() {
                               href={`/jobs/${job.id}`}
                               className="inline-flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-400 hover:underline transition-colors"
                             >
-                              View Details
+                              View details
                               <ExternalLink size={12} />
                             </Link>
                           </td>

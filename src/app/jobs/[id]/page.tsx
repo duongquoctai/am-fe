@@ -4,14 +4,12 @@ import { ProgressTracker } from "@/components/progress-tracker";
 import { VideoGalleryGrid } from "@/components/video-gallery-grid";
 import { useJobProgress } from "@/hooks/use-job-progress";
 import { useVideos } from "@/hooks/use-videos";
+import { Sidebar } from "@/components/shared/sidebar";
 import {
   Bell,
   Database,
-  LayoutDashboard,
   Moon,
   Search,
-  Settings,
-  User,
   ArrowLeft,
   Calendar,
   Compass,
@@ -58,48 +56,8 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-[#f2f2f2] overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-[#1c1c1c] bg-[#0a0a0a] hidden md:flex flex-col">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="font-bold text-white">AM</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight">AM Engine</span>
-          </div>
-
-          <nav className="space-y-1">
-            <Link
-              href="/"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <LayoutDashboard size={18} />
-              Dashboard
-            </Link>
-            <Link
-              href="/jobs"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm bg-[#121212] text-white font-medium transition-all"
-            >
-              <Database size={18} />
-              Crawl Jobs
-            </Link>
-            <Link
-              href="#"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <Settings size={18} />
-              Settings
-            </Link>
-          </nav>
-        </div>
-
-        <div className="mt-auto p-6 border-t border-[#1c1c1c]">
-          <div className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1]">
-            <User size={18} />
-            Profile
-          </div>
-        </div>
-      </aside>
+      {/* Sidebar Component */}
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">

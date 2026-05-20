@@ -3,18 +3,16 @@
 import { ControlPanel } from "@/components/dashboard/control-panel";
 import { VideoGalleryGrid } from "@/components/video-gallery-grid";
 import { createClient } from "@/lib/supabase/client";
+import { Sidebar } from "@/components/shared/sidebar";
 import {
+  Activity,
   Bell,
+  Cpu,
   Database,
-  LayoutDashboard,
+  Globe,
   Moon,
   Search,
-  Settings,
-  User,
-  Activity,
-  Cpu,
   Zap,
-  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -105,7 +103,7 @@ export default function DashboardPage() {
             if (prev.some((v) => v.id === newVideo.id)) return prev;
             return [newVideo, ...prev];
           });
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -117,7 +115,7 @@ export default function DashboardPage() {
         (payload: any) => {
           const deletedId = payload.old.id;
           setVideos((prev) => prev.filter((v) => v.id !== deletedId));
-        }
+        },
       )
       .subscribe();
 
@@ -129,11 +127,16 @@ export default function DashboardPage() {
   React.useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isVideosLoading && videos.length > 0) {
+        if (
+          entries[0].isIntersecting &&
+          hasMore &&
+          !isVideosLoading &&
+          videos.length > 0
+        ) {
           handleLoadMore();
         }
       },
-      { threshold: 0.1, rootMargin: "100px" }
+      { threshold: 0.1, rootMargin: "100px" },
     );
 
     const currentRef = observerRef.current;
@@ -150,48 +153,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-[#f2f2f2] overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-[#1c1c1c] bg-[#0a0a0a] hidden md:flex flex-col">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="font-bold text-white">AM</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight">AM Engine</span>
-          </div>
-
-          <nav className="space-y-1">
-            <Link
-              href="/"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm bg-[#121212] text-white font-medium transition-all"
-            >
-              <LayoutDashboard size={18} />
-              Dashboard
-            </Link>
-            <Link
-              href="/jobs"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <Database size={18} />
-              Crawl Jobs
-            </Link>
-            <Link
-              href="#"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1] hover:bg-[#121212] hover:text-white transition-all"
-            >
-              <Settings size={18} />
-              Settings
-            </Link>
-          </nav>
-        </div>
-
-        <div className="mt-auto p-6 border-t border-[#1c1c1c]">
-          <div className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-[#a1a1a1]">
-            <User size={18} />
-            Profile
-          </div>
-        </div>
-      </aside>
+      {/* Sidebar Component */}
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -238,7 +201,8 @@ export default function DashboardPage() {
               Job Creator Dashboard
             </h1>
             <p className="text-[#a1a1a1]">
-              Configure target parameters and initialize ingestion streams across networks.
+              Configure target parameters and initialize ingestion streams
+              across networks.
             </p>
           </div>
 
@@ -260,7 +224,10 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between border-b border-[#2a2a2a] pb-4">
                   <div>
                     <h2 className="text-lg font-semibold flex items-center gap-2">
-                      <Activity size={18} className="text-emerald-500 animate-pulse" />
+                      <Activity
+                        size={18}
+                        className="text-emerald-500 animate-pulse"
+                      />
                       Ingestion System Status
                     </h2>
                     <p className="text-xs text-[#a1a1a1] mt-0.5">
@@ -296,19 +263,24 @@ export default function DashboardPage() {
 
                 {/* Features List */}
                 <div className="space-y-3 pt-2">
-                  <h3 className="text-sm font-semibold text-white">System Highlights</h3>
+                  <h3 className="text-sm font-semibold text-white">
+                    System Highlights
+                  </h3>
                   <ul className="space-y-2 text-xs text-[#a1a1a1]">
                     <li className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      <strong>Parallel Fetching:</strong> Pulls asset URLs simultaneously bypassing standard rate limits.
+                      <strong>Parallel Fetching:</strong> Pulls asset URLs
+                      simultaneously bypassing standard rate limits.
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                      <strong>Deduplication Filter:</strong> Centralized check skips pre-existing download assets.
+                      <strong>Deduplication Filter:</strong> Centralized check
+                      skips pre-existing download assets.
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
-                      <strong>Real-Time Sync:</strong> Subscriptions propagate new resources directly to details page.
+                      <strong>Real-Time Sync:</strong> Subscriptions propagate
+                      new resources directly to details page.
                     </li>
                   </ul>
                 </div>
@@ -347,7 +319,9 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center gap-2 text-[#a1a1a1]">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
-                  <span className="text-xs font-semibold">Loading more videos...</span>
+                  <span className="text-xs font-semibold">
+                    Loading more videos...
+                  </span>
                 </div>
               </div>
             )}
