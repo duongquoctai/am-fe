@@ -1,6 +1,12 @@
-export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
-export type PostStatus = 'idle' | 'posting' | 'posted' | 'failed';
-export type PlatformType = 'instagram' | 'facebook' | 'tiktok' | 'douyin' | 'xiaohongshu';
+export type JobStatus = "pending" | "processing" | "completed" | "failed";
+export type EditStatus = "idle" | "editing" | "edited" | "failed";
+export type PostStatus = "idle" | "posting" | "posted" | "failed";
+export type PlatformType =
+  | "instagram"
+  | "facebook"
+  | "tiktok"
+  | "douyin"
+  | "xiaohongshu";
 
 export interface Database {
   public: {
@@ -59,6 +65,7 @@ export interface Database {
           post_status: PostStatus;
           affiliate_link: string | null;
           posted_url: string | null;
+          edit_status: EditStatus;
           created_at: string;
           updated_at: string;
         };
@@ -77,6 +84,7 @@ export interface Database {
           post_status?: PostStatus;
           affiliate_link?: string | null;
           posted_url?: string | null;
+          edit_status?: EditStatus;
           created_at?: string;
           updated_at?: string;
         };
@@ -95,6 +103,7 @@ export interface Database {
           post_status?: PostStatus;
           affiliate_link?: string | null;
           posted_url?: string | null;
+          edit_status?: EditStatus;
           created_at?: string;
           updated_at?: string;
         };

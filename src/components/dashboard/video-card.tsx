@@ -15,9 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Play, Trash2, User } from "lucide-react";
+import { Play, Trash2, User, Sliders, Loader2 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
+import { VideoEditorModal } from "@/components/shared/video-editor-modal";
 
 interface VideoCardProps {
   video: {
@@ -28,6 +29,8 @@ interface VideoCardProps {
     original_caption?: string | null;
     platform: string;
     affiliate_link?: string | null;
+    edit_status?: string | null;
+    duration?: number | null;
   };
   onDelete: (id: string) => void;
   onClick?: (video: any) => void;
@@ -40,6 +43,9 @@ export function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isEditorOpen, setIsEditorOpen] = React.useState(false);
+
+  const isRendering = video.edit_status === "editing";
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -66,12 +72,21 @@ export function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
     >
       <Card 
         className="bg-[#121212] border-[#2a2a2a] overflow-hidden group cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => !isRendering && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => onClick && onClick(video)}
+        onClick={() => !isRendering && onClick && onClick(video)}
       >
         <div className="relative aspect-[9/16] bg-[#0a0a0a]">
-          {isHovered && video.storage_url ? (
+          {/* Active rendering glassmorphism overlay */}
+          {isRendering && (
+            <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 text-center">
+              <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
+              <p className="text-[#f2f2f2] text-xs font-bold uppercase tracking-wider">Processing Asset</p>
+              <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">Background rendering active...</p>
+            </div>
+          )}
+
+          {isHovered && video.storage_url && !isRendering ? (
             <video
               src={video.storage_url}
               className="w-full h-full object-cover"
@@ -108,52 +123,56 @@ export function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
           </div>
 
           {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-              <Play className="w-6 h-6 text-white fill-current" />
+          {!isRendering && (
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                <Play className="w-6 h-6 text-white fill-current" />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Delete Button */}
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <button 
-                onClick={(e) => e.stopPropagation()} 
-                className="absolute top-3 right-3 p-2 rounded-md bg-black/60 backdrop-blur-md border border-[#2a2a2a] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20 hover:border-red-500/30 z-10"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-[#a1a1a1] hover:text-red-500 transition-colors" />
-              </button>
-            </DialogTrigger>
-            <DialogContent onClick={(e) => e.stopPropagation()}>
-              <DialogHeader>
-                <DialogTitle>Delete Video</DialogTitle>
-                <DialogDescription>
-                  This will permanently delete this video and its thumbnail.
-                  This action cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-[#1c1c1c] border-[#2a2a2a] text-[#f2f2f2] h-8"
-                  onClick={() => setOpen(false)}
-                  disabled={isDeleting}
+          {!isRendering && (
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <button 
+                  onClick={(e) => e.stopPropagation()} 
+                  className="absolute top-3 right-3 p-2 rounded-md bg-black/60 backdrop-blur-md border border-[#2a2a2a] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20 hover:border-red-500/30 z-10"
                 >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="h-8"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                  <Trash2 className="w-3.5 h-3.5 text-[#a1a1a1] hover:text-red-500 transition-colors" />
+                </button>
+              </DialogTrigger>
+              <DialogContent onClick={(e) => e.stopPropagation()}>
+                <DialogHeader>
+                  <DialogTitle>Delete Video</DialogTitle>
+                  <DialogDescription>
+                    This will permanently delete this video and its thumbnail.
+                    This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-[#1c1c1c] border-[#2a2a2a] text-[#f2f2f2] h-8"
+                    onClick={() => setOpen(false)}
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-8"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         <CardContent 
@@ -169,14 +188,36 @@ export function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
               onChange={(e) => setAffiliateLink(e.target.value)}
               placeholder="Paste link here"
               className="bg-[#0a0a0a] border-[#2a2a2a] text-xs h-8 text-white placeholder:text-[#3e3e42]"
+              disabled={isRendering}
             />
           </div>
 
-          <Button className="w-full bg-[#1c1c1c] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-[#f2f2f2] text-xs h-9">
-            Post to Facebook
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setIsEditorOpen(true)}
+              disabled={isRendering}
+              className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-[#f2f2f2] text-xs h-9 flex items-center justify-center gap-1.5"
+            >
+              <Sliders className="w-3.5 h-3.5 text-blue-400" />
+              Edit
+            </Button>
+            <Button 
+              disabled={isRendering}
+              className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-[#f2f2f2] text-xs h-9"
+            >
+              Post FB
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Editor Modal Sheet */}
+      <VideoEditorModal
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        video={video}
+      />
     </motion.div>
   );
 }
+

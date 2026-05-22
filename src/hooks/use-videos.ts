@@ -57,6 +57,23 @@ export function useVideos(jobId: string | null) {
       .on(
         "postgres_changes",
         {
+          event: "UPDATE",
+          schema: "public",
+          table: "videos",
+        },
+        (payload: any) => {
+          console.log("[useVideos] Video updated via realtime:", payload);
+          const updatedVideo = payload.new as Video;
+          if (!jobId || updatedVideo.job_id === jobId) {
+            setVideos((prev) =>
+              prev.map((v) => (v.id === updatedVideo.id ? updatedVideo : v))
+            );
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
           event: "DELETE",
           schema: "public",
           table: "videos",

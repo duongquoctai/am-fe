@@ -108,6 +108,20 @@ export default function DashboardPage() {
       .on(
         "postgres_changes",
         {
+          event: "UPDATE",
+          schema: "public",
+          table: "videos",
+        },
+        (payload: any) => {
+          const updatedVideo = payload.new as any;
+          setVideos((prev) =>
+            prev.map((v) => (v.id === updatedVideo.id ? updatedVideo : v))
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
           event: "DELETE",
           schema: "public",
           table: "videos",
